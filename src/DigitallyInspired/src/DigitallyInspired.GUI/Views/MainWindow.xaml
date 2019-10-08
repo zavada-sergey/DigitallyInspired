@@ -1,0 +1,154 @@
+﻿<Window x:Class="DigitallyInspired.GUI.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:h="http://helix-toolkit.org/wpf"
+        xmlns:viewModels="clr-namespace:DigitallyInspired.GUI.ViewModels"
+        mc:Ignorable="d"
+        Title="MAINWINDOW" Height="480" Width="850" WindowStartupLocation="CenterScreen"
+        MinHeight="480" MinWidth="850" Style="{StaticResource CustomWindowStyle}">
+
+    <Window.DataContext>
+        <viewModels:MainWindowViewModel />
+    </Window.DataContext>
+
+    <!--Start Main Grid-->
+    <Grid Background="White">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Path Data="M275.33333,-163 L275.33333,-21.667" HorizontalAlignment="Right" Stretch="Fill" Stroke="Black" Width="1" Grid.Column="0"/>
+
+        <!--Start Tasks Grid-->
+        <Grid Column="0">
+
+            <ItemsControl ItemsSource="{Binding TasksViewModel.ListTasks, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" x:Name="Tasks">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Margin="10 10 10 10" FontSize="18"
+                               Background="{Binding BackGround}"
+                               Content="{Binding Name}"
+                               Command="{Binding ElementName=Tasks, Path=DataContext.TasksViewModel.ClickSelectTask}"
+                               CommandParameter="{Binding}"
+                               IsEnabled="{Binding IsEnabled}"></Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </Grid>
+        <!--End Tasks Grid-->
+
+        <!--Start Content Grid-->
+        <Grid Column="1">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="50"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Path Data="M0,72 L168,72" Height="1" Stretch="Fill" Stroke="Black" VerticalAlignment="Bottom"/>
+
+            <!--Start Helix 3D Scene-->
+            <h:HelixViewport3D Grid.Row="0" ZoomExtentsWhenLoaded="True">
+                <h:SunLight/>
+                <ModelVisual3D x:Name="Model3D" Content="{Binding SceneViewModel.Model3D, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <h:LinesVisual3D Points="{Binding SceneViewModel.CoordinatesBoundingBox, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Color="Red"></h:LinesVisual3D>
+                <h:BindableTranslateManipulator Direction="0 0 1" 
+                                                Value="{Binding SceneViewModel.ManipulatorValue}"
+                                                TargetTransform="{Binding ElementName=Model3D, Path=Transform}"/>
+                <h:GridLinesVisual3D Width="8" Length="8" MinorDistance="1" MajorDistance="1" Thickness="0.01"/>
+            </h:HelixViewport3D>
+            <!--End Helix 3D Scene-->
+
+            <!--Start Additional Controls For Selected Task Grid-->
+            <Grid Row="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="16"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0" Visibility="{Binding TasksViewModel.SelectedTask, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Margin="5 10 5 10" Content="LOAD" FontSize="14"
+                                Command="{Binding Path=TasksViewModel.SelectedTask.ViewModel.ClickLoad, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                CommandParameter="{Binding TasksViewModel.ListTasks}"
+                                IsEnabled="{Binding TasksViewModel.SelectedTask.ViewModel.IsEnabledLoad}"
+                                Background="White"></Button>
+                        <Button Grid.Column="1" Margin="5 10 5 10" Content="CLEAR" FontSize="14"
+                                Command="{Binding Path=TasksViewModel.SelectedTask.ViewModel.ClickClear, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                CommandParameter="{Binding TasksViewModel.ListTasks}"
+                                IsEnabled="{Binding TasksViewModel.SelectedTask.ViewModel.IsEnabledClear}"
+                                Background="White"></Button>
+                    </Grid>
+
+                    <Grid Column="1">
+
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding TasksViewModel.SelectedTask.ViewModel, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IsTypeConverter}, ConverterParameter={x:Type viewModels:Task5ViewModel}}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <DockPanel LastChildFill="True">
+                                <Label DockPanel.Dock="Left" FontWeight="Bold">MIN Z</Label>
+                                <Slider DockPanel.Dock="Right" TickFrequency="1" IsSnapToTickEnabled="True" Minimum="-25" Maximum="-5" Margin="3 2 0 0"
+                                        Value="{Binding Path=TasksViewModel.SelectedTask.ViewModel.(viewModels:Task5ViewModel.SliderMinZ)}"
+                                        IsEnabled="{Binding Path=TasksViewModel.SelectedTask.ViewModel.(viewModels:Task5ViewModel.IsEnabledSliderMinZ)}"/>
+                            </DockPanel>
+
+                            <DockPanel LastChildFill="True">
+                                <Label DockPanel.Dock="Left" FontWeight="Bold">MAX Z</Label>
+                                <Slider DockPanel.Dock="Right" TickFrequency="1" IsSnapToTickEnabled="True" Minimum="5" Maximum="25"
+                                        Value="{Binding Path=TasksViewModel.SelectedTask.ViewModel.(viewModels:Task5ViewModel.SliderMaxZ)}"
+                                        IsEnabled="{Binding Path=TasksViewModel.SelectedTask.ViewModel.(viewModels:Task5ViewModel.IsEnabledSliderMaxZ)}"/>
+                            </DockPanel>
+                        </StackPanel>
+
+                        <Grid Grid.Column="1" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Margin="5 10 5 10" Background="White" Content="START" FontSize="14"
+                                    Command="{Binding Path=TasksViewModel.SelectedTask.ViewModel.(viewModels:Task5ViewModel.ClickStart)}"
+                                    IsEnabled="{Binding Path=TasksViewModel.SelectedTask.ViewModel.(viewModels:Task5ViewModel.IsEnabledStart)}"></Button>
+                            <Button Grid.Column="1" Margin="5 10 5 10" Background="White" Content="STOP" FontSize="14"
+                                    Command="{Binding Path=TasksViewModel.SelectedTask.ViewModel.(viewModels:Task5ViewModel.ClickStop)}"
+                                    IsEnabled="{Binding Path=TasksViewModel.SelectedTask.ViewModel.(viewModels:Task5ViewModel.IsEnabledStop)}"></Button>
+                        </Grid>
+                    </Grid>
+
+                </Grid>
+
+            </Grid>
+            <!--End Additional Controls For Selected Task Grid-->
+
+        </Grid>
+        <!--End Content Grid-->
+
+        <ResizeGrip Grid.Column="1" Opacity="0.75" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+
+    </Grid>
+    <!--End Main Grid-->
+
+</Window>
