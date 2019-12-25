@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BA7AAFF1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DigitallyInspired.GUI", "src\DigitallyInspired.GUI\DigitallyInspired.GUI.csproj", "{726EE70F-0578-43B4-B4F4-55149896A711}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitallyInspired.GUI.UnitTests", "tests\DigitallyInspired.GUI.UnitTests\DigitallyInspired.GUI.UnitTests.csproj", "{BDEB44EE-B583-4A63-AC1B-C84DBD1E832E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DigitallyInspired.GUI.UnitTests", "tests\DigitallyInspired.GUI.UnitTests\DigitallyInspired.GUI.UnitTests.csproj", "{BDEB44EE-B583-4A63-AC1B-C84DBD1E832E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
